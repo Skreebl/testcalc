@@ -83,7 +83,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 30%;
   }
   .input-group-large {
     display: flex;
@@ -93,14 +92,15 @@
     margin-bottom: 25px;
   }
   label {
-    font-size: 14px;
+    font-size: 13px;
     margin-bottom: 5px;
     color: #000;
     text-align: center;
+    font-weight: bold;
   }
   input[type="time"], input[type="number"], input[type="text"] {
     width: 100%;
-    padding: 10px 5px;
+    padding: 10px 2px;
     text-align: center;
     border: 1px solid #666;
     border-radius: 5px;
@@ -275,33 +275,44 @@
   </div>
 
   <div id="calcPrincipal" class="tab-content active">
+    
     <div class="input-group-large">
-      <label>1ª REGA (INÍCIO)</label>
-      <input type="time" id="horaInicio" step="1" value="08:00:00" style="width: 50%;">
+      <label>⏰ 1ª REGA (Hora : Min)</label>
+      <div style="display: flex; gap: 8px; align-items: center; justify-content: center; width: 60%; max-width: 200px;">
+        <input type="number" id="inicioHor" value="8" min="0" max="23">
+        <span style="font-weight: bold; font-size: 20px;">:</span>
+        <input type="number" id="inicioMin" value="0" min="0" max="59">
+      </div>
     </div>
 
     <div class="row-inputs">
-      <div class="input-group" style="width: 28%;">
-        <label>Intervalo</label>
-        <input type="time" id="intervalo" step="1" value="01:00:00">
-      </div>
       
-      <div class="input-group" style="width: 40%;">
-        <label>Duração (M:S)</label>
-        <div style="display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%;">
-          <input type="number" id="duracaoMin" value="3" min="0" max="59" style="padding: 10px 2px;">
+      <div class="input-group" style="width: 32%;">
+        <label>⏳ Int (H:M)</label>
+        <div style="display: flex; gap: 4px; align-items: center; justify-content: center; width: 100%;">
+          <input type="number" id="intHor" value="1" min="0" max="23">
           <span style="font-weight: bold;">:</span>
-          <input type="number" id="duracaoSeg" value="0" min="0" max="59" style="padding: 10px 2px;">
+          <input type="number" id="intMin" value="0" min="0" max="59">
         </div>
       </div>
       
-      <div class="input-group" style="width: 26%;">
-        <label>Regas</label>
+      <div class="input-group" style="width: 36%;">
+        <label>💧 Dur (M:S)</label>
+        <div style="display: flex; gap: 4px; align-items: center; justify-content: center; width: 100%;">
+          <input type="number" id="duracaoMin" value="3" min="0" max="59">
+          <span style="font-weight: bold;">:</span>
+          <input type="number" id="duracaoSeg" value="0" min="0" max="59">
+        </div>
+      </div>
+      
+      <div class="input-group" style="width: 25%;">
+        <label>🔄 Regas</label>
         <input type="number" id="quantidadeRegas" value="20" min="1">
       </div>
+
     </div>
 
-    <button class="btn-blue" onclick="calcularRegas()">Calcular Horários</button>
+    <button class="btn-blue" onclick="calcularRegas()">▶️ Calcular Horários</button>
 
     <table id="tabelaResultados" style="display:none;">
       <thead>
@@ -392,36 +403,34 @@
   }
 
   function calcularRegas() {
-    const strHoraInicio = document.getElementById('horaInicio').value;
-    const strIntervalo = document.getElementById('intervalo').value;
+    // Читаємо всі поля ручного вводу
+    const inicioH = parseInt(document.getElementById('inicioHor').value) || 0;
+    const inicioM = parseInt(document.getElementById('inicioMin').value) || 0;
     
-    // БЕРЕМО ДАНІ З НОВИХ ВІКОНЕЦЬ ХВИЛИН І СЕКУНД:
+    const intH = parseInt(document.getElementById('intHor').value) || 0;
+    const intM = parseInt(document.getElementById('intMin').value) || 0;
+
     const durM = parseInt(document.getElementById('duracaoMin').value) || 0;
     const durS = parseInt(document.getElementById('duracaoSeg').value) || 0;
     
     const qtdRegas = parseInt(document.getElementById('quantidadeRegas').value);
 
-    if(!strHoraInicio || !strIntervalo || !qtdRegas) {
-      alert('Por favor, preencha todos os campos!');
-      return;
-    }
-    
-    // ЗБЕРІГАЄМО В ПАМ'ЯТЬ:
-    localStorage.setItem('regas_horaInicio', strHoraInicio);
-    localStorage.setItem('regas_intervalo', strIntervalo);
+    // ЗБЕРІГАЄМО В ПАМ'ЯТЬ ВСІ ЦИФРИ ОКРЕМО
+    localStorage.setItem('regas_inicioHor', inicioH);
+    localStorage.setItem('regas_inicioMin', inicioM);
+    localStorage.setItem('regas_intHor', intH);
+    localStorage.setItem('regas_intMin', intM);
     localStorage.setItem('regas_duracaoMin', durM);
     localStorage.setItem('regas_duracaoSeg', durS);
     localStorage.setItem('regas_qtd', qtdRegas);
 
-    let [inicioH, inicioM, inicioS] = strHoraInicio.split(':').map(Number);
-    if(isNaN(inicioS)) inicioS = 0;
-    let tempoAtual = new Date(2000, 0, 1, inicioH, inicioM, inicioS);
+    // Математика старту (секунди завжди 0)
+    let tempoAtual = new Date(2000, 0, 1, inicioH, inicioM, 0);
 
-    let [intH, intM, intS] = strIntervalo.split(':').map(Number);
-    if(isNaN(intS)) intS = 0;
-    const msIntervalo = (intH * 3600 + intM * 60 + intS) * 1000;
+    // Математика інтервалу
+    const msIntervalo = (intH * 3600 + intM * 60) * 1000;
 
-    // ПРЯМИЙ РОЗРАХУНОК МІЛІСЕКУНД
+    // Математика тривалості
     const msDuracao = (durM * 60 + durS) * 1000;
 
     const corpoTabela = document.getElementById('corpoTabela');
@@ -523,25 +532,21 @@
   // ================= АВТОМАТИЧНИЙ ЗАПУСК =================
   window.addEventListener('DOMContentLoaded', (event) => {
       
-      if(localStorage.getItem('regas_horaInicio')) {
-        document.getElementById('horaInicio').value = localStorage.getItem('regas_horaInicio');
-      }
-      if(localStorage.getItem('regas_intervalo')) {
-        document.getElementById('intervalo').value = localStorage.getItem('regas_intervalo');
-      }
+      // Завантажуємо кожну цифру окремо
+      if(localStorage.getItem('regas_inicioHor')) document.getElementById('inicioHor').value = localStorage.getItem('regas_inicioHor');
+      if(localStorage.getItem('regas_inicioMin')) document.getElementById('inicioMin').value = localStorage.getItem('regas_inicioMin');
       
-      // ЗАВАНТАЖЕННЯ ХВИЛИН І СЕКУНД З ПАМ'ЯТІ:
-      if(localStorage.getItem('regas_duracaoMin')) {
-        document.getElementById('duracaoMin').value = localStorage.getItem('regas_duracaoMin');
-      }
-      if(localStorage.getItem('regas_duracaoSeg')) {
-        document.getElementById('duracaoSeg').value = localStorage.getItem('regas_duracaoSeg');
-      }
+      if(localStorage.getItem('regas_intHor')) document.getElementById('intHor').value = localStorage.getItem('regas_intHor');
+      if(localStorage.getItem('regas_intMin')) document.getElementById('intMin').value = localStorage.getItem('regas_intMin');
+      
+      if(localStorage.getItem('regas_duracaoMin')) document.getElementById('duracaoMin').value = localStorage.getItem('regas_duracaoMin');
+      if(localStorage.getItem('regas_duracaoSeg')) document.getElementById('duracaoSeg').value = localStorage.getItem('regas_duracaoSeg');
 
       if(localStorage.getItem('regas_qtd')) {
         document.getElementById('quantidadeRegas').value = localStorage.getItem('regas_qtd');
       }
 
+      // Реєстрація Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/BoraRegar/sw.js', { scope: '/BoraRegar/' })
           .then(reg => console.log('SW Ok'))
