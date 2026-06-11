@@ -12,11 +12,11 @@
   /* ================= СТИЛІ БАЗОВІ ================= */
   body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: #f0f2f5; /* Трохи темніший фон, щоб виділити білі картки */
     color: #000;
     margin: 0;
-    padding: 20px;
-    padding-bottom: 60px;
+    padding: 15px;
+    padding-bottom: 70px;
     display: flex;
     justify-content: center;
     overflow-x: hidden;
@@ -24,7 +24,6 @@
   .container {
     width: 100%;
     max-width: 400px;
-    background: #f8f9fa;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -72,70 +71,133 @@
     to {opacity: 1;}
   }
 
-  /* ================= СТИЛІ: BORA REGAR ================= */
-  .row-inputs {
+  /* ================= НОВІ СТИЛІ КАРТОК (ВІЗУАЛЬНЕ РОЗДІЛЕННЯ) ================= */
+  .card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .card-row {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    gap: 15px;
+  }
+  .card-half {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
     margin-bottom: 15px;
-  }
-  .input-group {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 48%;
+    box-sizing: border-box;
   }
-  .input-group-large {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 25px;
-  }
+
   label {
-    font-size: 13px;
-    margin-bottom: 5px;
-    color: #000;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #333;
     text-align: center;
     font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
-  input[type="time"], input[type="number"], input[type="text"] {
+  .time-inputs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 10px 2px;
+  }
+  .time-inputs input[type="number"] {
+    width: 70px;
+    padding: 12px 5px;
     text-align: center;
-    border: 1px solid #666;
-    border-radius: 5px;
-    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    background-color: #fafafa;
     box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .time-inputs input[type="number"]:focus {
+    border-color: #007bff;
+    outline: none;
     background-color: #fff;
   }
+  .time-separator {
+    font-weight: bold;
+    font-size: 24px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .input-regas {
+    width: 100px;
+    padding: 12px;
+    text-align: center;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    transition: border-color 0.2s;
+  }
+  .input-regas:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
   .btn-blue {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 5px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
   }
   .btn-blue:active {
     background-color: #0056b3;
+    transform: translateY(2px);
   }
+
   table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     text-align: center;
     background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
   th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
   }
   th {
-    background-color: #eeeeee;
+    background-color: #f8f9fa;
+    color: #555;
+  }
+  tr:last-child td {
+    border-bottom: none;
   }
 
   /* ================= СТИЛІ: ÁGUA POR VASO ================= */
@@ -144,15 +206,12 @@
     font-size: 14px;
     color: #555;
     margin-bottom: 10px;
-    margin-top: 15px;
-    text-transform: uppercase;
-    font-weight: bold;
-    text-align: center;
+    margin-top: 5px;
   }
   .radio-group {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    width: 100%;
   }
   .radio-group input[type="radio"] {
     display: none;
@@ -162,12 +221,13 @@
     text-align: center;
     padding: 12px;
     border: 2px solid #007bff;
-    border-radius: 5px;
+    border-radius: 8px;
     color: #007bff;
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
     transition: all 0.2s;
+    margin: 0;
   }
   .radio-group input[type="radio"]:checked + label {
     background-color: #007bff;
@@ -175,37 +235,40 @@
   }
   .btn-green {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     background-color: #198754;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
   }
   .btn-green:active {
     background-color: #157347;
+    transform: translateY(2px);
   }
   .result-box {
     margin-top: 25px;
     padding: 20px;
-    background-color: #e2e3e5;
-    border-radius: 8px;
+    background-color: #e8f5e9;
+    border-radius: 12px;
     text-align: center;
     display: none; 
+    border: 2px solid #198754;
   }
   .result-title {
     font-size: 14px;
-    color: #555;
+    color: #157347;
     text-transform: uppercase;
     font-weight: bold;
   }
   .result-value {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: bold;
-    color: #007bff;
+    color: #198754;
     margin: 10px 0;
   }
 
@@ -215,13 +278,13 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     padding: 15px 0;
     font-size: 13px;
     color: #777;
     text-align: center;
     z-index: 100;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
   }
   .modal-qr {
     display: none;
@@ -276,40 +339,38 @@
 
   <div id="calcPrincipal" class="tab-content active">
     
-    <div class="input-group-large">
+    <div class="card">
       <label>⏰ 1ª REGA (Hora : Min)</label>
-      <div style="display: flex; gap: 8px; align-items: center; justify-content: center; width: 60%; max-width: 200px;">
-        <input type="number" id="inicioHor" value="8" min="0" max="23">
-        <span style="font-weight: bold; font-size: 20px;">:</span>
-        <input type="number" id="inicioMin" value="0" min="0" max="59">
+      <div class="time-inputs">
+        <input type="number" id="inicioHor" value="8" min="0" max="23" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
+        <span class="time-separator">:</span>
+        <input type="number" id="inicioMin" value="0" min="0" max="59" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
       </div>
     </div>
 
-    <div class="row-inputs">
+    <div class="card">
+      <label>⏳ Intervalo (H : M)</label>
+      <div class="time-inputs">
+        <input type="number" id="intHor" value="1" min="0" max="23" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
+        <span class="time-separator">:</span>
+        <input type="number" id="intMin" value="0" min="0" max="59" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
+      </div>
+    </div>
       
-      <div class="input-group" style="width: 32%;">
-        <label>⏳ Int (H:M)</label>
-        <div style="display: flex; gap: 4px; align-items: center; justify-content: center; width: 100%;">
-          <input type="number" id="intHor" value="1" min="0" max="23">
-          <span style="font-weight: bold;">:</span>
-          <input type="number" id="intMin" value="0" min="0" max="59">
+    <div class="card-row">
+      <div class="card-half" style="width: 58%;">
+        <label>💧 Dur (M : S)</label>
+        <div class="time-inputs">
+          <input type="number" id="duracaoMin" value="3" min="0" max="59" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
+          <span class="time-separator">:</span>
+          <input type="number" id="duracaoSeg" value="0" min="0" max="59" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
         </div>
       </div>
       
-      <div class="input-group" style="width: 36%;">
-        <label>💧 Dur (M:S)</label>
-        <div style="display: flex; gap: 4px; align-items: center; justify-content: center; width: 100%;">
-          <input type="number" id="duracaoMin" value="3" min="0" max="59">
-          <span style="font-weight: bold;">:</span>
-          <input type="number" id="duracaoSeg" value="0" min="0" max="59">
-        </div>
-      </div>
-      
-      <div class="input-group" style="width: 25%;">
+      <div class="card-half" style="width: 38%;">
         <label>🔄 Regas</label>
-        <input type="number" id="quantidadeRegas" value="20" min="1">
+        <input type="number" id="quantidadeRegas" class="input-regas" value="20" min="1" onfocus="this.value=''" onblur="if(this.value==='') this.value='1'">
       </div>
-
     </div>
 
     <button class="btn-blue" onclick="calcularRegas()">▶️ Calcular Horários</button>
@@ -329,32 +390,38 @@
 
   <div id="calcVaso" class="tab-content">
     
-    <label class="section-title">Débito do gotejador</label>
-    <div class="radio-group">
-        <input type="radio" id="vazao2" name="vazao" value="2" checked>
-        <label for="vazao2">2 L/h</label>
-        
-        <input type="radio" id="vazao3" name="vazao" value="3">
-        <label for="vazao3">3 L/h</label>
+    <div class="card">
+      <label class="section-title">Débito do gotejador</label>
+      <div class="radio-group">
+          <input type="radio" id="vazao2" name="vazao" value="2" checked>
+          <label for="vazao2">2 L/h</label>
+          
+          <input type="radio" id="vazao3" name="vazao" value="3">
+          <label for="vazao3">3 L/h</label>
+      </div>
     </div>
 
-    <label class="section-title">Gotejadores por vaso</label>
-    <div class="radio-group">
-        <input type="radio" id="qtd1" name="qtd" value="1" checked>
-        <label for="qtd1">1</label>
-        
-        <input type="radio" id="qtd2" name="qtd" value="2">
-        <label for="qtd2">2</label>
+    <div class="card">
+      <label class="section-title">Gotejadores por vaso</label>
+      <div class="radio-group">
+          <input type="radio" id="qtd1" name="qtd" value="1" checked>
+          <label for="qtd1">1</label>
+          
+          <input type="radio" id="qtd2" name="qtd" value="2">
+          <label for="qtd2">2</label>
+      </div>
     </div>
 
-    <label class="section-title">1ª Rega (minutos)</label>
-    <input type="number" id="tempoPrimeira" placeholder="Ex: 10" min="0">
+    <div class="card">
+      <label class="section-title">1ª Rega (minutos)</label>
+      <input type="number" class="input-regas" style="width:100%; box-sizing:border-box;" id="tempoPrimeira" placeholder="Ex: 10" min="0" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
 
-    <label class="section-title">Regas principais (minutos)</label>
-    <input type="number" id="tempoPrincipal" placeholder="Ex: 4" min="0">
+      <label class="section-title">Regas principais (minutos)</label>
+      <input type="number" class="input-regas" style="width:100%; box-sizing:border-box;" id="tempoPrincipal" placeholder="Ex: 4" min="0" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
 
-    <label class="section-title">Nº de regas principais</label>
-    <input type="number" id="numRegas" placeholder="Ex: 5" min="0">
+      <label class="section-title">Nº de regas principais</label>
+      <input type="number" class="input-regas" style="width:100%; box-sizing:border-box;" id="numRegas" placeholder="Ex: 5" min="0" onfocus="this.value=''" onblur="if(this.value==='') this.value='0'">
+    </div>
 
     <button class="btn-green" onclick="calcularVolume()">Calcular Volume</button>
 
@@ -403,7 +470,6 @@
   }
 
   function calcularRegas() {
-    // Читаємо всі поля ручного вводу
     const inicioH = parseInt(document.getElementById('inicioHor').value) || 0;
     const inicioM = parseInt(document.getElementById('inicioMin').value) || 0;
     
@@ -413,9 +479,8 @@
     const durM = parseInt(document.getElementById('duracaoMin').value) || 0;
     const durS = parseInt(document.getElementById('duracaoSeg').value) || 0;
     
-    const qtdRegas = parseInt(document.getElementById('quantidadeRegas').value);
+    const qtdRegas = parseInt(document.getElementById('quantidadeRegas').value) || 1;
 
-    // ЗБЕРІГАЄМО В ПАМ'ЯТЬ ВСІ ЦИФРИ ОКРЕМО
     localStorage.setItem('regas_inicioHor', inicioH);
     localStorage.setItem('regas_inicioMin', inicioM);
     localStorage.setItem('regas_intHor', intH);
@@ -424,13 +489,8 @@
     localStorage.setItem('regas_duracaoSeg', durS);
     localStorage.setItem('regas_qtd', qtdRegas);
 
-    // Математика старту (секунди завжди 0)
     let tempoAtual = new Date(2000, 0, 1, inicioH, inicioM, 0);
-
-    // Математика інтервалу
     const msIntervalo = (intH * 3600 + intM * 60) * 1000;
-
-    // Математика тривалості
     const msDuracao = (durM * 60 + durS) * 1000;
 
     const corpoTabela = document.getElementById('corpoTabela');
@@ -438,7 +498,6 @@
 
     for(let i = 1; i <= qtdRegas; i++) {
       let inicioFormatado = formatarTempo(tempoAtual);
-      
       let tempoFim = new Date(tempoAtual.getTime() + msDuracao);
       let fimFormatado = formatarTempo(tempoFim);
 
@@ -468,7 +527,6 @@
     const volumeMl = volumeLitros * 1000;
 
     document.getElementById('resMl').innerText = Math.round(volumeMl) + ' ml';
-    
     document.getElementById('resultadoBox').style.display = 'block';
   }
 
@@ -499,7 +557,6 @@
     }
   }
 
-  
 // ================= ЛОГІКА ДЛЯ СВАЙПІВ =================
   let touchstartX = 0;
   let touchendX = 0;
@@ -532,7 +589,6 @@
   // ================= АВТОМАТИЧНИЙ ЗАПУСК =================
   window.addEventListener('DOMContentLoaded', (event) => {
       
-      // Завантажуємо кожну цифру окремо
       if(localStorage.getItem('regas_inicioHor')) document.getElementById('inicioHor').value = localStorage.getItem('regas_inicioHor');
       if(localStorage.getItem('regas_inicioMin')) document.getElementById('inicioMin').value = localStorage.getItem('regas_inicioMin');
       
@@ -546,7 +602,6 @@
         document.getElementById('quantidadeRegas').value = localStorage.getItem('regas_qtd');
       }
 
-      // Реєстрація Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/BoraRegar/sw.js', { scope: '/BoraRegar/' })
           .then(reg => console.log('SW Ok'))
