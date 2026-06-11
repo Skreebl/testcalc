@@ -19,7 +19,7 @@
     padding-bottom: 60px;
     display: flex;
     justify-content: center;
-    overflow-x: hidden; /* Забороняємо горизонтальну прокрутку всієї сторінки */
+    overflow-x: hidden;
   }
   .container {
     width: 100%;
@@ -61,7 +61,6 @@
   .tab-content {
     display: none;
     width: 100%;
-    /* Додаємо анімацію плавної появи при свайпі/кліку */
     animation: fadeEffect 0.3s;
   }
   .tab-content.active {
@@ -97,6 +96,7 @@
     font-size: 14px;
     margin-bottom: 5px;
     color: #000;
+    text-align: center;
   }
   input[type="time"], input[type="number"], input[type="text"] {
     width: 100%;
@@ -281,17 +281,23 @@
     </div>
 
     <div class="row-inputs">
-      <div class="input-group">
+      <div class="input-group" style="width: 28%;">
         <label>Intervalo</label>
-        <input type="time" id="intervalo" step="1" value="00:00:00">
+        <input type="time" id="intervalo" step="1" value="01:00:00">
       </div>
-      <div class="input-group">
-        <label>Duração</label>
-        <input type="time" id="duracao" step="1" value="00:00:00">
+      
+      <div class="input-group" style="width: 40%;">
+        <label>Duração (M:S)</label>
+        <div style="display: flex; gap: 5px; align-items: center; justify-content: center; width: 100%;">
+          <input type="number" id="duracaoMin" value="3" min="0" max="59" style="padding: 10px 2px;">
+          <span style="font-weight: bold;">:</span>
+          <input type="number" id="duracaoSeg" value="0" min="0" max="59" style="padding: 10px 2px;">
+        </div>
       </div>
-      <div class="input-group">
+      
+      <div class="input-group" style="width: 26%;">
         <label>Regas</label>
-        <input type="number" id="quantidadeRegas" value="0" min="1">
+        <input type="number" id="quantidadeRegas" value="20" min="1">
       </div>
     </div>
 
@@ -388,17 +394,23 @@
   function calcularRegas() {
     const strHoraInicio = document.getElementById('horaInicio').value;
     const strIntervalo = document.getElementById('intervalo').value;
-    const strDuracao = document.getElementById('duracao').value;
+    
+    // БЕРЕМО ДАНІ З НОВИХ ВІКОНЕЦЬ ХВИЛИН І СЕКУНД:
+    const durM = parseInt(document.getElementById('duracaoMin').value) || 0;
+    const durS = parseInt(document.getElementById('duracaoSeg').value) || 0;
+    
     const qtdRegas = parseInt(document.getElementById('quantidadeRegas').value);
 
-    if(!strHoraInicio || !strIntervalo || !strDuracao || !qtdRegas) {
+    if(!strHoraInicio || !strIntervalo || !qtdRegas) {
       alert('Por favor, preencha todos os campos!');
       return;
     }
     
+    // ЗБЕРІГАЄМО В ПАМ'ЯТЬ:
     localStorage.setItem('regas_horaInicio', strHoraInicio);
     localStorage.setItem('regas_intervalo', strIntervalo);
-    localStorage.setItem('regas_duracao', strDuracao);
+    localStorage.setItem('regas_duracaoMin', durM);
+    localStorage.setItem('regas_duracaoSeg', durS);
     localStorage.setItem('regas_qtd', qtdRegas);
 
     let [inicioH, inicioM, inicioS] = strHoraInicio.split(':').map(Number);
@@ -409,9 +421,8 @@
     if(isNaN(intS)) intS = 0;
     const msIntervalo = (intH * 3600 + intM * 60 + intS) * 1000;
 
-    let [durH, durM, durS] = strDuracao.split(':').map(Number);
-    if(isNaN(durS)) durS = 0;
-    const msDuracao = (durH * 3600 + durM * 60 + durS) * 1000;
+    // ПРЯМИЙ РОЗРАХУНОК МІЛІСЕКУНД
+    const msDuracao = (durM * 60 + durS) * 1000;
 
     const corpoTabela = document.getElementById('corpoTabela');
     corpoTabela.innerHTML = '';
@@ -485,18 +496,17 @@
   let touchendX = 0;
 
   document.addEventListener('touchstart', e => {
-    // Додали ще LABEL до винятків, аби випадково не свайпало при виборі радіо-кнопок
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'LABEL') {
       touchstartX = e.changedTouches[0].screenX;
     }
   }, false);
 
   document.addEventListener('touchend', e => {
-    if (touchstartX === 0) return; // Якщо дотик був на кнопці/інпуті - ігноруємо
+    if (touchstartX === 0) return; 
     
     touchendX = e.changedTouches[0].screenX;
     handleSwipe();
-    touchstartX = 0; // Скидаємо позицію
+    touchstartX = 0; 
   }, false);
 
   function handleSwipe() {
@@ -504,10 +514,8 @@
     const botoes = document.getElementsByClassName('tab-btn');
     
     if (touchendX < touchstartX - threshold) {
-      // Свайп вліво <-
       mostrarTab('calcVaso', botoes[1]);
     } else if (touchendX > touchstartX + threshold) {
-      // Свайп вправо ->
       mostrarTab('calcPrincipal', botoes[0]);
     }
   }
@@ -521,9 +529,15 @@
       if(localStorage.getItem('regas_intervalo')) {
         document.getElementById('intervalo').value = localStorage.getItem('regas_intervalo');
       }
-      if(localStorage.getItem('regas_duracao')) {
-        document.getElementById('duracao').value = localStorage.getItem('regas_duracao');
+      
+      // ЗАВАНТАЖЕННЯ ХВИЛИН І СЕКУНД З ПАМ'ЯТІ:
+      if(localStorage.getItem('regas_duracaoMin')) {
+        document.getElementById('duracaoMin').value = localStorage.getItem('regas_duracaoMin');
       }
+      if(localStorage.getItem('regas_duracaoSeg')) {
+        document.getElementById('duracaoSeg').value = localStorage.getItem('regas_duracaoSeg');
+      }
+
       if(localStorage.getItem('regas_qtd')) {
         document.getElementById('quantidadeRegas').value = localStorage.getItem('regas_qtd');
       }
