@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Regas</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007bff">
+<link rel="apple-touch-icon" href="icon-192.ico">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+  /* ================= СТИЛІ БАЗОВІ ================= */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #000;
+    margin: 0;
+    padding: 20px;
+    padding-bottom: 60px;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden; /* Забороняємо горизонтальну прокрутку всієї сторінки */
+  }
+  .container {
+    width: 100%;
+    max-width: 400px;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ================= СТИЛІ ВКЛАДОК (TABS) ================= */
+  .tab-container {
+    display: flex;
+    justify-content: center;
+    background: #e2e3e5;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .tab-btn.active {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .tab-content {
+    display: none;
+    width: 100%;
+    /* Додаємо анімацію плавної появи при свайпі/кліку */
+    animation: fadeEffect 0.3s;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  
+  @keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+  /* ================= СТИЛІ: BORA REGAR ================= */
+  .row-inputs {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+  }
+  .input-group-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+  label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #000;
+  }
+  input[type="time"], input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 10px 5px;
+    text-align: center;
+    border: 1px solid #666;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: #fff;
+  }
+  .btn-blue {
+    width: 100%;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  .btn-blue:active {
+    background-color: #0056b3;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: center;
+    background: #fff;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  th {
+    background-color: #eeeeee;
+  }
+
+  /* ================= СТИЛІ: ÁGUA POR VASO ================= */
+  label.section-title {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+  }
+  .radio-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .radio-group input[type="radio"] {
+    display: none;
+  }
+  .radio-group label {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .radio-group input[type="radio"]:checked + label {
+    background-color: #007bff;
+    color: white;
+  }
+  .btn-green {
+    width: 100%;
+    padding: 15px;
+    background-color: #198754;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  .btn-green:active {
+    background-color: #157347;
+  }
+  .result-box {
+    margin-top: 25px;
+    padding: 20px;
+    background-color: #e2e3e5;
+    border-radius: 8px;
+    text-align: center;
+    display: none; 
+  }
+  .result-title {
+    font-size: 14px;
+    color: #555;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  .result-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 10px 0;
+  }
+
+  /* ================= ФУТЕР І QR-КОД ================= */
+  .assinatura {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    padding: 15px 0;
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+  .modal-qr {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    max-width: 80%;
+  }
+  .modal-content img {
+    width: 200px;
+    height: 200px;
+    cursor: pointer;
+    border: 5px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .modal-content p {
+    margin-top: 15px;
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+  }
+  .modal-content p.dica {
+    font-size: 12px;
+    color: #666;
+    font-weight: normal;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="mostrarTab('calcPrincipal', this)">Regas</button>
+    <button class="tab-btn" onclick="mostrarTab('calcVaso', this)">Por Vaso</button>
+  </div>
+
+  <div id="calcPrincipal" class="tab-content active">
+    <div class="input-group-large">
+      <label>1ª REGA (INÍCIO)</label>
+      <input type="time" id="horaInicio" step="1" value="08:00:00" style="width: 50%;">
+    </div>
+
+    <div class="row-inputs">
+      <div class="input-group">
+        <label>Intervalo</label>
+        <input type="time" id="intervalo" step="1" value="00:00:00">
+      </div>
+      <div class="input-group">
+        <label>Duração</label>
+        <input type="time" id="duracao" step="1" value="00:00:00">
+      </div>
+      <div class="input-group">
+        <label>Regas</label>
+        <input type="number" id="quantidadeRegas" value="0" min="1">
+      </div>
+    </div>
+
+    <button class="btn-blue" onclick="calcularRegas()">Calcular Horários</button>
+
+    <table id="tabelaResultados" style="display:none;">
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Início</th>
+          <th>Fim</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="calcVaso" class="tab-content">
+    
+    <label class="section-title">Débito do gotejador</label>
+    <div class="radio-group">
+        <input type="radio" id="vazao2" name="vazao" value="2" checked>
+        <label for="vazao2">2 L/h</label>
+        
+        <input type="radio" id="vazao3" name="vazao" value="3">
+        <label for="vazao3">3 L/h</label>
+    </div>
+
+    <label class="section-title">Gotejadores por vaso</label>
+    <div class="radio-group">
+        <input type="radio" id="qtd1" name="qtd" value="1" checked>
+        <label for="qtd1">1</label>
+        
+        <input type="radio" id="qtd2" name="qtd" value="2">
+        <label for="qtd2">2</label>
+    </div>
+
+    <label class="section-title">1ª Rega (minutos)</label>
+    <input type="number" id="tempoPrimeira" placeholder="Ex: 10" min="0">
+
+    <label class="section-title">Regas principais (minutos)</label>
+    <input type="number" id="tempoPrincipal" placeholder="Ex: 4" min="0">
+
+    <label class="section-title">Nº de regas principais</label>
+    <input type="number" id="numRegas" placeholder="Ex: 5" min="0">
+
+    <button class="btn-green" onclick="calcularVolume()">Calcular Volume</button>
+
+    <div class="result-box" id="resultadoBox">
+        <div class="result-title">Volume Total por Vaso</div>
+        <div class="result-value" id="resMl">0 ml</div>
+    </div>
+  </div>
+
+  <div class="assinatura">
+    Feito por Yurii Ivanytskyi <span onclick="mostrarQR()" style="cursor: pointer; color: #007bff; text-decoration: underline; font-weight: bold;"> 🤟🏻</span>
+  </div>
+
+</div> 
+
+<div id="qrModal" class="modal-qr" onclick="fecharQR(event)">
+  <div class="modal-content">
+    <h3 style="margin-top:0; color: #2c3e50;">Bora Regar!</h3>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://skreebl.github.io/BoraRegar/" alt="QR Code" onclick="partilharApp()">
+    <p>Clica no QR Code para partilhar</p>
+    <p class="dica">(Ou pede a um colega para ler com a câmara)</p>
+  </div>
+</div>
+
+<script>
+  // ================= ФУНКЦІЇ ДЛЯ КНОПОК =================
+  function mostrarTab(tabId, elementoBotao) {
+      const conteudos = document.getElementsByClassName('tab-content');
+      for (let i = 0; i < conteudos.length; i++) {
+          conteudos[i].classList.remove('active');
+          conteudos[i].style.display = 'none';
+      }
+
+      const botoes = document.getElementsByClassName('tab-btn');
+      for (let i = 0; i < botoes.length; i++) {
+          botoes[i].classList.remove('active');
+      }
+
+      document.getElementById(tabId).classList.add('active');
+      document.getElementById(tabId).style.display = 'block';
+      elementoBotao.classList.add('active');
+  }
+
+  function formatarTempo(dataObj) {
+    return dataObj.toTimeString().split(' ')[0];
+  }
+
+  function calcularRegas() {
+    const strHoraInicio = document.getElementById('horaInicio').value;
+    const strIntervalo = document.getElementById('intervalo').value;
+    const strDuracao = document.getElementById('duracao').value;
+    const qtdRegas = parseInt(document.getElementById('quantidadeRegas').value);
+
+    if(!strHoraInicio || !strIntervalo || !strDuracao || !qtdRegas) {
+      alert('Por favor, preencha todos os campos!');
+      return;
+    }
+    
+    localStorage.setItem('regas_horaInicio', strHoraInicio);
+    localStorage.setItem('regas_intervalo', strIntervalo);
+    localStorage.setItem('regas_duracao', strDuracao);
+    localStorage.setItem('regas_qtd', qtdRegas);
+
+    let [inicioH, inicioM, inicioS] = strHoraInicio.split(':').map(Number);
+    if(isNaN(inicioS)) inicioS = 0;
+    let tempoAtual = new Date(2000, 0, 1, inicioH, inicioM, inicioS);
+
+    let [intH, intM, intS] = strIntervalo.split(':').map(Number);
+    if(isNaN(intS)) intS = 0;
+    const msIntervalo = (intH * 3600 + intM * 60 + intS) * 1000;
+
+    let [durH, durM, durS] = strDuracao.split(':').map(Number);
+    if(isNaN(durS)) durS = 0;
+    const msDuracao = (durH * 3600 + durM * 60 + durS) * 1000;
+
+    const corpoTabela = document.getElementById('corpoTabela');
+    corpoTabela.innerHTML = '';
+
+    for(let i = 1; i <= qtdRegas; i++) {
+      let inicioFormatado = formatarTempo(tempoAtual);
+      
+      let tempoFim = new Date(tempoAtual.getTime() + msDuracao);
+      let fimFormatado = formatarTempo(tempoFim);
+
+      let tr = document.createElement('tr');
+      tr.innerHTML = `<td><b>${i}</b></td><td>${inicioFormatado}</td><td>${fimFormatado}</td>`;
+      corpoTabela.appendChild(tr);
+
+      tempoAtual = new Date(tempoAtual.getTime() + msIntervalo);
+    }
+
+    document.getElementById('tabelaResultados').style.display = 'table';
+  }
+
+  function calcularVolume() {
+    const vazaoHora = parseFloat(document.querySelector('input[name="vazao"]:checked').value);
+    const qtdGotejadores = parseInt(document.querySelector('input[name="qtd"]:checked').value);
+    
+    const tempoPrimeira = parseFloat(document.getElementById('tempoPrimeira').value) || 0;
+    const tempoPrincipal = parseFloat(document.getElementById('tempoPrincipal').value) || 0;
+    const numRegas = parseInt(document.getElementById('numRegas').value) || 0;
+
+    const vazaoTotalHoraPorVaso = vazaoHora * qtdGotejadores;
+    const vazaoPorMinuto = vazaoTotalHoraPorVaso / 60;
+    const tempoTotalMinutos = tempoPrimeira + (tempoPrincipal * numRegas);
+
+    const volumeLitros = vazaoPorMinuto * tempoTotalMinutos;
+    const volumeMl = volumeLitros * 1000;
+
+    document.getElementById('resMl').innerText = Math.round(volumeMl) + ' ml';
+    
+    document.getElementById('resultadoBox').style.display = 'block';
+  }
+
+  function mostrarQR() {
+    document.getElementById('qrModal').style.display = 'flex';
+  }
+
+  function fecharQR(event) {
+    if (event.target.id === 'qrModal') {
+      document.getElementById('qrModal').style.display = 'none';
+    }
+  }
+
+  function partilharApp() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Calculadora de Regas',
+        text: 'Olha esta calculadora de regas fixe! Muito útil para o trabalho.',
+        url: 'https://skreebl.github.io/BoraRegar/'
+      })
+      .then(() => {
+        document.getElementById('qrModal').style.display = 'none'; 
+      })
+      .catch((error) => console.log('Помилка', error));
+    } else {
+      navigator.clipboard.writeText('https://skreebl.github.io/BoraRegar/');
+      alert('Link copiado!');
+    }
+  }
+
+  
+// ================= ЛОГІКА ДЛЯ СВАЙПІВ =================
+  let touchstartX = 0;
+  let touchendX = 0;
+
+  document.addEventListener('touchstart', e => {
+    // Додали ще LABEL до винятків, аби випадково не свайпало при виборі радіо-кнопок
+    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'LABEL') {
+      touchstartX = e.changedTouches[0].screenX;
+    }
+  }, false);
+
+  document.addEventListener('touchend', e => {
+    if (touchstartX === 0) return; // Якщо дотик був на кнопці/інпуті - ігноруємо
+    
+    touchendX = e.changedTouches[0].screenX;
+    handleSwipe();
+    touchstartX = 0; // Скидаємо позицію
+  }, false);
+
+  function handleSwipe() {
+    const threshold = 80;
+    const botoes = document.getElementsByClassName('tab-btn');
+    
+    if (touchendX < touchstartX - threshold) {
+      // Свайп вліво <-
+      mostrarTab('calcVaso', botoes[1]);
+    } else if (touchendX > touchstartX + threshold) {
+      // Свайп вправо ->
+      mostrarTab('calcPrincipal', botoes[0]);
+    }
+  }
+
+  // ================= АВТОМАТИЧНИЙ ЗАПУСК =================
+  window.addEventListener('DOMContentLoaded', (event) => {
+      
+      if(localStorage.getItem('regas_horaInicio')) {
+        document.getElementById('horaInicio').value = localStorage.getItem('regas_horaInicio');
+      }
+      if(localStorage.getItem('regas_intervalo')) {
+        document.getElementById('intervalo').value = localStorage.getItem('regas_intervalo');
+      }
+      if(localStorage.getItem('regas_duracao')) {
+        document.getElementById('duracao').value = localStorage.getItem('regas_duracao');
+      }
+      if(localStorage.getItem('regas_qtd')) {
+        document.getElementById('quantidadeRegas').value = localStorage.getItem('regas_qtd');
+      }
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/BoraRegar/sw.js', { scope: '/BoraRegar/' })
+          .then(reg => console.log('SW Ok'))
+          .catch(err => console.log('SW Erro:', err));
+
+        let refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      }
+  });
+</script>
+</body>
+</html>
